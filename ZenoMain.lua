@@ -135,3 +135,105 @@ No.Position = UDim2.new(0.55, 0, 0.6, 0)
 No.Text = "ยกเลิก"
 No.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
 No.MouseButton1Click:Connect(function() Confirm.Visible = false end)
+local SG = Instance.new("ScreenGui", game:GetService("CoreGui"))
+SG.Name = "ZenoHub_Professional_V3"
+
+-- [[ FOV System Setup ]]
+local FOVCircle = Drawing.new("Circle")
+FOVCircle.Visible = false
+FOVCircle.Color = Color3.fromRGB(255, 255, 0) -- สีเหลืองตามภาพ (IMG_0022)
+FOVCircle.Thickness = 1
+FOVCircle.NumSides = 100
+FOVCircle.Radius = 150
+FOVCircle.Filled = false
+FOVCircle.Transparency = 1
+
+-- อัปเดตตำแหน่งวงกลมให้ตามเมาส์/กลางจอตลอดเวลา
+game:GetService("RunService").RenderStepped:Connect(function()
+    local Mouse = game:GetService("Players").LocalPlayer:GetMouse()
+    FOVCircle.Position = Vector2.new(Mouse.X, Mouse.Y + 36)
+end)
+
+-- [[ UI Framework ]]
+local Main = Instance.new("Frame", SG)
+Main.Size = UDim2.new(0, 550, 0, 350)
+Main.Position = UDim2.new(0.5, -275, 0.5, -175)
+Main.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+Main.BorderSizePixel = 0
+Main.Active = true
+Main.Draggable = true
+
+-- Sidebar และปุ่มย่อเมนู (เหมือนเดิม)
+local Sidebar = Instance.new("Frame", Main)
+Sidebar.Size = UDim2.new(0, 160, 1, 0)
+Sidebar.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+Sidebar.BorderSizePixel = 0
+
+-- [[ หน้า Combat ]]
+local CombatPage = Instance.new("ScrollingFrame", Main)
+CombatPage.Size = UDim2.new(1, -170, 1, -50)
+CombatPage.Position = UDim2.new(0, 165, 0, 45)
+CombatPage.BackgroundTransparency = 1
+CombatPage.ScrollBarThickness = 2
+CombatPage.Visible = true -- เปิดหน้า Combat เป็นหน้าแรก
+
+-- 1. ฟังก์ชันเปิด/ปิด Show FOV (Toggle)
+local ShowFOVFrame = Instance.new("Frame", CombatPage)
+ShowFOVFrame.Size = UDim2.new(0.95, 0, 0, 45)
+ShowFOVFrame.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+
+local FOVLabel = Instance.new("TextLabel", ShowFOVFrame)
+FOVLabel.Size = UDim2.new(0.7, 0, 1, 0)
+FOVLabel.Text = "  Show FOV"
+FOVLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+FOVLabel.TextXAlignment = Enum.TextXAlignment.Left
+FOVLabel.BackgroundTransparency = 1
+
+local FOVToggle = Instance.new("TextButton", ShowFOVFrame)
+FOVToggle.Size = UDim2.new(0, 40, 0, 25)
+FOVToggle.Position = UDim2.new(0.85, 0, 0.2, 0)
+FOVToggle.Text = "OFF"
+FOVToggle.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
+
+FOVToggle.MouseButton1Click:Connect(function()
+    FOVCircle.Visible = not FOVCircle.Visible
+    if FOVCircle.Visible then
+        FOVToggle.Text = "ON"
+        FOVToggle.BackgroundColor3 = Color3.fromRGB(50, 200, 50)
+    else
+        FOVToggle.Text = "OFF"
+        FOVToggle.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
+    end
+end)
+
+-- 2. ฟังก์ชันปรับขนาด FOV Scale (Slider จำลอง)
+local ScaleFrame = Instance.new("Frame", CombatPage)
+ScaleFrame.Size = UDim2.new(0.95, 0, 0, 60)
+ScaleFrame.Position = UDim2.new(0, 0, 0, 55)
+ScaleFrame.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+
+local ScaleLabel = Instance.new("TextLabel", ScaleFrame)
+ScaleLabel.Size = UDim2.new(1, 0, 0, 25)
+ScaleLabel.Text = "  FOV Scale (Radius)"
+ScaleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+ScaleLabel.TextXAlignment = Enum.TextXAlignment.Left
+ScaleLabel.BackgroundTransparency = 1
+
+-- ปุ่มปรับขนาด (เพิ่ม/ลด แบบง่ายสำหรับมือถือ)
+local function CreateScaleBtn(text, pos, delta)
+    local b = Instance.new("TextButton", ScaleFrame)
+    b.Size = UDim2.new(0, 40, 0, 25)
+    b.Position = pos
+    b.Text = text
+    b.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+    b.TextColor3 = Color3.fromRGB(255, 255, 255)
+    b.MouseButton1Click:Connect(function()
+        FOVCircle.Radius = math.clamp(FOVCircle.Radius + delta, 10, 800)
+    end)
+end
+
+CreateScaleBtn("-", UDim2.new(0.7, 0, 0.5, 0), -25)
+CreateScaleBtn("+", UDim2.new(0.85, 0, 0.5, 0), 25)
+
+-- [[ ส่วนควบคุมอื่นๆ (เหมือนเดิม) ]]
+-- (ปุ่มย่อรูปคนยืนแอ็ค, ปุ่ม X ปิดเมนู ใส่ไว้เหมือนโค้ดเดิมได้เลยครับ)
