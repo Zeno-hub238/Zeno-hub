@@ -1,4 +1,3 @@
-Lua
 local SG = Instance.new("ScreenGui", game:GetService("CoreGui"))
 SG.Name = "ZenoHub_Professional"
 
